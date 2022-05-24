@@ -96,7 +96,8 @@ def main():
         k, max_iter, eps, file_name_1, file_name_2 = get_args(argv)
         combined_inputs = read_data(file_name_1, file_name_2)
         initial_centroids,initial_centroids_indices = initialize_centroids(combined_inputs,k)
-        write_output(initial_centroids, "tmp_initial_centroids.txt")        
+        write_output(initial_centroids, "tmp_initial_centroids.txt")
+        write_output(combined_inputs, "tmp_combined_inputs.txt")
         
 
 

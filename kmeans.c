@@ -265,7 +265,7 @@ FILE* write_output(char* output_filename, int rows, int cols,double** centroids)
     return fp;
 }
 
-static double** fit(int K, int max_iter, double epsilon, char* tmp_combined_inputs, char* tmp_initial_centroids){
+double** K_means(int K, int max_iter, double epsilon, char* tmp_combined_inputs, char* tmp_initial_centroids){
     /*
      * recieves input file, K = number of clusters, max_iter = max number of iterations
      * connects every point to the closest cluster
@@ -401,7 +401,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     if (!PyArg_ParseTuple(args,"iidss",&K, &max_iter, &epsilon, &tmp_combined_inputs,&tmp_initial_centroids)){
         return NULL;
     }
-    return Py_BuildValue("O", fit(K,max_iter,epsilon,tmp_combined_inputs,tmp_initial_centroids));
+    return Py_BuildValue("O", K_means(K,max_iter,epsilon,tmp_combined_inputs,tmp_initial_centroids));
 }
 
 static PyMethodDef capiMethods[] = {
@@ -429,41 +429,22 @@ PyInit_mykmeanssp(void)
 }
 
 
-int main(int argc, char * argv[]) {
+double** fit(int K, int max_iter, double epsilon, char* tmp_combined_inputs, char* tmp_initial_centroids) {
 
-    char* K_str;
-    char* max_iter_str;
-    char* input_name;
-    char* output_name;
-    int K, max_iter;
+    double** result;
 
-    if (validate_input_args(argc,argv)==1){
-        printf("Invalid Input!");
-        return 1;
-    }
-    if (argc==4){
-        K_str = argv[1];
-        max_iter_str = "200";
-        input_name = argv[2];
-        output_name = argv[3];
-    } else {
-        K_str = argv[1];
-        max_iter_str = argv[2];
-        input_name = argv[3];
-        output_name = argv[4];
-    }
-    K = atoi(K_str);
-    max_iter = atoi(max_iter_str);
-
+    /* How to Handle Errors without main function? where to jump? */
 
     if (setjmp(savebuf)==0){
-        fit(K, max_iter,input_name,output_name);
-        return 0;
+        result = K_means(K, max_iter,epsilon,tmp_combined_inputs,tmp_initial_centroids);
+        return result;
     } else {
         printf("An Error Has Occurred");
-        return 1;
+        return result;
     }
 
+    return result;
+    
 }
 
 
